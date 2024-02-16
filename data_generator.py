@@ -139,13 +139,16 @@ def creating_csv(csv_name):
         # Prompt with all_info
         prompt_all_info.append(reader_info_question + politics_info_question + letter_source_info_question + article_info_question)
 
-    data['prompt_article_info'] = prompt_article_info
-    data['prompt_reader_info'] = prompt_reader_info
-    data['prompt_politics_info'] = prompt_politics_info
-    data['prompt_letter_source_info'] = prompt_letter_source_info
-    data['prompt_all_info'] = prompt_all_info
+    df = pd.DataFrame({
+        'article_id': data['id'],
+        'prompt_article_info': prompt_article_info,
+        'prompt_reader_info': prompt_reader_info,
+        'prompt_politics_info': prompt_politics_info,
+        'prompt_letter_source_info': prompt_letter_source_info,
+        'prompt_all_info': prompt_all_info,
+    })
 
-    exporting_data_to_csv(data, csv_name)
+    exporting_data_to_csv(df, csv_name)
 
 # Example usage:
 creating_csv("data/prompts.csv")
