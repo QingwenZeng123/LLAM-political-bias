@@ -40,7 +40,6 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
                 lm = llama + qa_bot(query)
                 lm += select(["is-not-biased", "is-biased"], name='answer')
                 print(lm["answer"])
-<<<<<<< Updated upstream
                 answers[row['article_id']] = str(lm['answer'])
         elif prompt_column_name != 'prompt_article_info' and row['article_id'] != 43:
             query = context + row[prompt_column_name] # This prompt consist of article title and content
@@ -57,18 +56,6 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
                 answers[index] = str(lm['answer'])
     print("Predict from", model_name, "without any attributes is :")
     print(answers)
-=======
-                answers[row['id']] = str(lm['answer'])
-        elif prompt_column_name != 'prompt_article_info':
-            if row['id'] != 43:
-                print("index: ", index)
-                query = context + row[prompt_column_name] # This prompt consist of article title and content
-                if model_name == 'llama':
-                    lm = llama + qa_bot(query)
-                    lm += select(['is-biased', "is-not-biased"], name='answer')
-                    print(lm["answer"])
-                    answers[index] = str(lm['answer'])
->>>>>>> Stashed changes
     return answers
 
 def run_experiment_and_write_csv(data, model_name, context, output_filename, prompt_column_name):

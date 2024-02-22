@@ -34,7 +34,7 @@ def collect_analysis(result_file_path, no_other_source = False):
     return (overall, politics_accuracy)
 
 
-result_file_paths = ['result_data/original_prompt_result.csv', 'result_data/participant_politics_result.csv', 'result_data/article_source_result.csv']
+result_file_paths = ['result_data/original_prompt_result.csv', 'result_data/participant_politics_result.csv', 'result_data/article_source_result.csv', 'result_data/all_result.csv']
 output_csv_path = 'result_data/analysis_results.csv'
 first_output = []
 conservative = []
