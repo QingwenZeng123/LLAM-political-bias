@@ -26,8 +26,8 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
     for index, row in data.iterrows():
        
         # while this article id haven't been evaluated
-        if prompt_column_name == 'prompt_article_info' and row['id'] not in [43] and answers[row['id']] == '':
-            print('id is: ', row['id'])
+        if prompt_column_name == 'prompt_article_info' and row['article_id'] not in [43] and answers[row['id']] == '':
+            print('id is: ', row['article_id'])
             query = context + row[prompt_column_name] # This prompt consist of article title and content
             if model_name == 'llama':
                 # Load the llama
@@ -39,21 +39,20 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
                 lm = llama + qa_bot(query)
                 lm += select(['is-biased', "is-not-biased"], name='answer')
                 print(lm["answer"])
-                answers[row['id']] = str(lm['answer'])
-        elif prompt_column_name != 'prompt_article_info':
-            if row['id'] != 43:
-                query = context + row[prompt_column_name] # This prompt consist of article title and content
-                if model_name == 'llama':
-                    # Load the llama
-                    llama = models.LlamaCpp('orca_mini_v3_7b.Q4_K_M.gguf', 
-                                             n_ctx=4096,  # Context window size 
-                                             n_gpu_layers=-1,  # -1 to use all GPU layers, 0 to use only CPU
-                                             verbose=False  # Whether to print debug info
-                                            )
-                    lm = llama + qa_bot(query)
-                    lm += select(['is-biased', "is-not-biased"], name='answer')
-                    print(lm["answer"])
-                    answers[index] = str(lm['answer'])
+                answers[row['article_id']] = str(lm['answer'])
+        elif prompt_column_name != 'prompt_article_info' and row['article_id'] != 43:
+            query = context + row[prompt_column_name] # This prompt consist of article title and content
+            if model_name == 'llama':
+                # Load the llama
+                llama = models.LlamaCpp('orca_mini_v3_7b.Q4_K_M.gguf', 
+                                            n_ctx=4096,  # Context window size 
+                                            n_gpu_layers=-1,  # -1 to use all GPU layers, 0 to use only CPU
+                                            verbose=False  # Whether to print debug info
+                                        )
+                lm = llama + qa_bot(query)
+                lm += select(['is-biased', "is-not-biased"], name='answer')
+                print(lm["answer"])
+                answers[index] = str(lm['answer'])
     print("Predict from", model_name, "without any attributes is :")
     print(answers)
     return answers
