@@ -95,7 +95,7 @@ def creating_csv(csv_name):
 
     article_info = '''
     Article Title: {title}
-    Article Content: {content}
+    Article Content: {content}\n
     '''
 
     reader_info = "Reader Demographics: {age} years old {gender} {language} speaker from {country}\n"
