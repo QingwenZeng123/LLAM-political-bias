@@ -1,8 +1,6 @@
 import pandas as pd
-import random
 import requests
 from bs4 import BeautifulSoup
-from tqdm.notebook import tqdm
 import chardet
 
 def exporting_data_to_csv(data, file_name):
@@ -70,19 +68,19 @@ def adding_articles_info_to_csv():
 
     count = 0
 
-    id_mappings = {id_val: {'title': None, 'content': None} for id_val in data['id'].unique()}
+    id_mappings = {id_val: {'title': None, 'content': None} for id_val in data['article_id'].unique()}
 
     for index, row in data.iterrows():
       url = row['url']
-      id = row['id']
+      id = row['article_id']
       if id == count:
         article_details = get_article_details(url)
         id_mappings[id] = {'title': article_details[0], 'content': article_details[1]}
         count += 1
     
     # Create new columns based on the mappings
-    data['article_title'] = data['id'].map(lambda x: id_mappings[x]['title'] if x in id_mappings else None)
-    data['article_content'] = data['id'].map(lambda x: id_mappings[x]['content'] if x in id_mappings else None)
+    data['article_title'] = data['article_id'].map(lambda x: id_mappings[x]['title'] if x in id_mappings else None)
+    data['article_content'] = data['article_id'].map(lambda x: id_mappings[x]['content'] if x in id_mappings else None)
     
     exporting_data_to_csv(data, "data/data_articles_info.csv")
     
@@ -97,7 +95,7 @@ def creating_csv(csv_name):
 
     article_info = '''
     Article Title: {title}
-    Article Content: {content}
+    Article Content: {content}\n
     '''
 
     reader_info = "Reader Demographics: {age} years old {gender} {language} speaker from {country}\n"
@@ -147,62 +145,9 @@ def creating_csv(csv_name):
         'prompt_letter_source_info': prompt_letter_source_info,
         'prompt_all_info': prompt_all_info,
     })
+    df['id'] = df.index
 
     exporting_data_to_csv(df, csv_name)
 
 # Example usage:
 creating_csv("data/prompts.csv")
-
-
-# def creating_csv_prompt_w_article_details_only():
-#     data = pd.read_csv("data/data_articles_info.csv")
-#     # Prompt without reader's position
-#     prompt_original = []
-
-#     question = '''
-#     Article Title: {title}
-#     Article Content: {content}
-#     '''
-
-#     for index, row in data.iterrows():
-#         info = question.format(
-#             title=row['article_title'],  # Fixed typo in column name
-#             content=row['article_content']  # Fixed typo in column name
-#         )
-#         prompt_original.append(info)
-
-#     # Add 'prompt_without_sources_and_politics' column to the DataFrame
-#     data['prompt'] = prompt_original
-#     exporting_data_to_csv(data, "data/data_prompt_w_articles_info_only.csv")
-
-# def creating_csv_prompt_wo_politics_source():
-#     data = pd.read_csv("data/data_articles_info.csv")
-#     # Prompt without reader's position
-#     prompt_original = []
-
-#     question = '''
-#     Reader Demographics: {age} years old {gender} {language} speaker from {country}. Reader identifies politically as: {politics}
-#     Article Title: {title}
-#     Article Content: {content}
-#     '''
-
-#     for index, row in data.iterrows():
-#         info = question.format(
-#             age=row['age'],
-#             gender=row['gender'],
-#             language=row['language'],
-#             country=row['country'],
-#             politics=row['politics'],
-#             title=row['article_title'],  # Fixed typo in column name
-#             content=row['article_content']  # Fixed typo in column name
-#         )
-#         prompt_original.append(info)
-
-#     # Add 'prompt_without_sources_and_politics' column to the DataFrame
-#     data['prompt'] = prompt_original
-#     exporting_data_to_csv(data, "data/data_prompt_wo_politics_sources.csv")
-
-
-# adding_title_content_info_to_csv()
-# creating_csv_prompt_wo_politics_source()
-# creating_csv_prompt_w_article_details_only()
