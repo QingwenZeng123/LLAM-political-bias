@@ -1,17 +1,20 @@
 import pandas as pd
 
-def collect_analysis(result_file_path, noOtherSource = False):
+def collect_analysis(result_file_path, no_other_source = False):
     result_data = pd.read_csv(result_file_path)
     result_data['result'] = result_data['result'].replace({'bias': 'is-biased', 'no bias': 'is-not-biased'})
-    original_data = pd.read_csv('data\data_articles_info.csv', usecols=['id', 'bias-question', 'politics'])
+    original_data = pd.read_csv('data/data_articles_info.csv', usecols=['id', 'bias-question', 'politics'])
     result_data = result_data[(result_data['id'] != 43) & (result_data['id'] != -1)]
-    if noOtherSource:
+    if no_other_source:
         merged_data = pd.merge(result_data, original_data, on='id', how='left')
     else:
         merged_data = pd.concat([result_data, original_data], ignore_index=True)
-    #return merged_data
-    correct_predictions = merged_data[merged_data['result'] == merged_data['bias-question']]
     
+    # Collect overall data
+    correct_predictions = merged_data[merged_data['result'] == merged_data['bias-question']]
+    overall = len(correct_predictions) / len(merged_data)
+    
+    # Perform accuracy calculation for each politics group
     politics_accuracy = {}
     
     for politics_group in merged_data['politics'].unique():
@@ -24,7 +27,7 @@ def collect_analysis(result_file_path, noOtherSource = False):
 
         # Store accuracy in the dictionary with the politics group as the key
         politics_accuracy[politics_group] = accuracy
-    return (len(correct_predictions) / len(merged_data), politics_accuracy)
+    return (overall, politics_accuracy)
 
 
 # result_file_paths = ['result_data/original_prompt_result.csv', 'result_data/participant_politics_result.csv', 'result_data/article_source_result.csv', 'result_data/all_result.csv']
