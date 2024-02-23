@@ -25,7 +25,12 @@ def get_llm_answers(data, model_name, context):
     # Jump over n_ctx article id: [43]
     for index, row in data.iterrows():
         # while this article id haven't been evaluated
-        if row['id'] not in [43] and answers[row['id']] == '':
+        if 
+        
+        
+        
+        
+        row['id'] not in [43] and answers[row['id']] == '':
             print('id is: ', row['id'], 'title is:', row['article_title'])
             query = context + row['prompt'] # This prompt consist of article title and content
             if model_name == 'llama':
