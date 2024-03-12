@@ -6,11 +6,14 @@ import csv
 
 @guidance
 def qa_bot(lm, query):
+    # choose the answer between is-biased and is-not biased based on guidance
+    response = select(["is-not-biased", "is-biased"], name='answer')
+    
+    # Append the selected response to the language model
     lm += f'''\
     Q: {query}
-    A: {gen(name="answer", stop="Q:")}'''
+    A: {response}'''
     return lm
-
 
 def get_llm_answers(data, model_name, context, prompt_column_name):
     """
@@ -80,13 +83,37 @@ def run_experiment_and_write_csv(data, model_name, context, output_filename, pro
             writer.writerow(row)
 
 data = pd.read_csv('data/prompts.csv')
-# Background context without any attributes\t
-context_wo_info = "You are going to be the reader of a political article. Your job is to determine whether the article is biased based on reader point of view. You answer either is-biased or is-not-biased, with no explanation. An article is-biased in its presentation of the topic, meaning that it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group.\n"
+
 
 def run_experiments():
-    #run_experiment_and_write_csv(data, "llama", context_wo_info, "result_data/original_prompt_result2.csv", 'prompt_article_info')
-    run_experiment_and_write_csv(data, "llama", context_wo_info, "result_data/participant_politics_result.csv", "prompt_politics_info")
-    run_experiment_and_write_csv(data, "llama", context_wo_info, "result_data/article_source_result.csv", "prompt_letter_source_info")
-    run_experiment_and_write_csv(data, "llama", context_wo_info, "result_data/all_result.csv", "prompt_all_info")
+    # Contexts for 4 experiments
+    article_only_context = "You are going to be the reader of a political article. Your job is to determine whether the article is biased based on reader point of view. \
+                              You answer either is-biased or is-not-biased, with no explanation. An article is-biased in its presentation of the topic, \
+                              meaning that it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts)\
+                              for the purpose of appealing to a certain political group.\n"
+
+    political_side_context = "You are going to be the reader of a political article. Your job is to determine whether the article is biased based on the Reader identifies politics group.\
+                              You answer either is-biased or is-not-biased, with no explanation.\
+                              An article is-biased in its presentation of the topic, meaning that it ever exaggerates, misrepresents, omits,\
+                              or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group.\n"
+
+
+    article_source_context = "You are going to be the reader of a political article. Your job is to determine whether the article is biased. And take source of the article into consideration to provide answer.\
+                              You answer either is-biased or is-not-biased, with no explanation.\
+                              An article is-biased in its presentation of the topic, meaning that it ever exaggerates, misrepresents, omits,\
+                              or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group.\n"
+
+
+    all_information_context = "You are going to be the reader of a political article. Your job is to determine whether the article is biased.\
+                              And take all the anticipants information into consideration to provide answer,\
+                              which include Reader Demographics information, Readers' politics group and article source\
+                              You answer either is-biased or is-not-biased, with no explanation.\
+                              An article is-biased in its presentation of the topic, meaning that it ever exaggerates, misrepresents, omits,\
+                              or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group.\n"
+
+    run_experiment_and_write_csv(data, "llama", article_only_context, "result_data/original_prompt_result2.csv", 'prompt_article_info')
+    run_experiment_and_write_csv(data, "llama", political_side_context, "result_data/participant_politics_result.csv", "prompt_politics_info")
+    run_experiment_and_write_csv(data, "llama", article_source_context, "result_data/article_source_result.csv", "prompt_letter_source_info")
+    run_experiment_and_write_csv(data, "llama", all_information_context, "result_data/all_result.csv", "prompt_all_info")
 
 run_experiments()
