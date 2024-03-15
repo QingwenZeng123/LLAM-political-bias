@@ -1,3 +1,6 @@
+from textwrap import indent
+
+from regex import F
 import guidance
 import pandas as pd
 from guidance import models, select, gen
@@ -110,10 +113,34 @@ def run_experiments():
                               You answer either is-biased or is-not-biased, with no explanation.\
                               An article is-biased in its presentation of the topic, meaning that it ever exaggerates, misrepresents, omits,\
                               or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group.\n"
+    
+    conservative_pov_context = "You are going to be the reader of a political article who is identical as Conservative. Your job is to determine whether the article is biased based on Conservative reader point of view. \
+                              You answer either is-biased or is-not-biased, with no explanation. An article is-biased in its presentation of the topic, \
+                              meaning that it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts)\
+                              for the purpose of appealing to a certain political group.\n"
+                              
+    liberal_pov_context = "You are going to be the reader of a political article who is identical as Liberal. Your job is to determine whether the article is biased based on :iberal reader point of view. \
+                              You answer either is-biased or is-not-biased, with no explanation. An article is-biased in its presentation of the topic, \
+                              meaning that it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts)\
+                              for the purpose of appealing to a certain political group.\n"
+                              
+    Independence_pov_context = "You are going to be the reader of a political article who is identical as Independence for politics. Your job is to determine whether the article is biased based on Independence reader point of view. \
+                              You answer either is-biased or is-not-biased, with no explanation. An article is-biased in its presentation of the topic, \
+                              meaning that it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts)\
+                              for the purpose of appealing to a certain political group.\n"
 
-    run_experiment_and_write_csv(data, "llama", article_only_context, "result_data/original_prompt_result2.csv", 'prompt_article_info')
-    run_experiment_and_write_csv(data, "llama", political_side_context, "result_data/participant_politics_result.csv", "prompt_politics_info")
-    run_experiment_and_write_csv(data, "llama", article_source_context, "result_data/article_source_result.csv", "prompt_letter_source_info")
-    run_experiment_and_write_csv(data, "llama", all_information_context, "result_data/all_result.csv", "prompt_all_info")
+    run_experiment_and_write_csv(data, "llama", article_only_context, "result_data/v2/original_prompt_result.csv", 'prompt_article_info')
+    run_experiment_and_write_csv(data, "llama", political_side_context, "result_data/v2/participant_politics_result.csv", "prompt_politics_info")
+    run_experiment_and_write_csv(data, "llama", article_source_context, "result_data/v2/article_source_result.csv", "prompt_letter_source_info")
+    run_experiment_and_write_csv(data, "llama", all_information_context, "result_data/v2/all_result.csv", "prompt_all_info")
+    
+    politics_prompts = [conservative_pov_context, liberal_pov_context, Independence_pov_context]
+    folder_version = 3
+    for politic_prompt in politics_prompts:
+        run_experiment_and_write_csv(data, "llama", politic_prompt, "result_data/v" + folder_version + "/original_prompt_result.csv", 'prompt_article_info')
+        run_experiment_and_write_csv(data, "llama", politic_prompt, "result_data/v" + folder_version + "/participant_politics_result.csv", "prompt_politics_info")
+        run_experiment_and_write_csv(data, "llama", politic_prompt, "result_data/v" + folder_version + "/article_source_result.csv", "prompt_letter_source_info")
+        run_experiment_and_write_csv(data, "llama", politic_prompt, "result_data/v" + folder_version + "/all_result.csv", "prompt_all_info")
+        folder_version += 1
 
 run_experiments()
