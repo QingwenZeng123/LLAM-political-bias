@@ -86,9 +86,10 @@ def adding_articles_info_to_csv():
     
 
 def creating_csv(csv_name):
+    general_prompt = "You are going to be the reader of a political article. Your job is to determine whether or not the article is biased. An article is defined as \"biased\" if it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group. After reading the article {additional_info}, your answer should be either \"is-biased\" or \"is-not-biased\". Answer only with one of these phrases and provide no further explanation."
+    
     data = pd.read_csv('data/data_articles_info.csv')
     prompt_article_info = []
-    prompt_reader_info = []
     prompt_politics_info = []
     prompt_letter_source_info = []
     prompt_all_info = []
@@ -98,9 +99,9 @@ def creating_csv(csv_name):
     Article Content: {content}\n
     '''
 
-    reader_info = "Reader Demographics: {age} years old {gender} {language} speaker from {country}\n"
-    politics_info = "Reader identifies politically as: {politics}\n"
-    letter_source_info = "Source of the letter: {letter_source}\n"
+    viewpoint_prompt = "from the viewpoint of an individual who is "
+    reader_info = "{age}-year-old {gender} {language} speaker from {country}"
+    letter_source = "from the publication or organization {source}"
 
     for _, row in data.iterrows():
         article_info_question = article_info.format(
@@ -115,32 +116,26 @@ def creating_csv(csv_name):
             country=row['country']
         )
         
-        letter_source_info_question = letter_source_info.format(
-            letter_source=row['source']
-        )
+        letter_source_info_question = letter_source.format(source = row['source'])
         
-        politics_info_question = politics_info.format(
-            politics=row['politics']
-        )
+        politics_info_question = general_prompt.format(additional_info = viewpoint_prompt + row['politics'])
+        
         # Prompt with article_info only
-        prompt_article_info.append(article_info_question)
-
-        # Prompt with reader_info
-        prompt_reader_info.append(reader_info_question + article_info_question)
+        prompt_article_info.append( general_prompt.format(
+            additional_info = "") + article_info_question)
 
         # Prompt with politics_info
         prompt_politics_info.append(politics_info_question + article_info_question)
 
         # Prompt with letter_source_info
-        prompt_letter_source_info.append(letter_source_info_question + article_info_question)
+        prompt_letter_source_info.append(general_prompt.format(additional_info = letter_source_info_question) + article_info_question)
 
         # Prompt with all_info
-        prompt_all_info.append(reader_info_question + politics_info_question + letter_source_info_question + article_info_question)
+        prompt_all_info.append(general_prompt.format(additional_info  = letter_source_info_question + " and "+ viewpoint_prompt + reader_info_question + " and is " + row['politics']) + article_info_question)
 
     df = pd.DataFrame({
         'article_id': data['id'],
         'prompt_article_info': prompt_article_info,
-        'prompt_reader_info': prompt_reader_info,
         'prompt_politics_info': prompt_politics_info,
         'prompt_letter_source_info': prompt_letter_source_info,
         'prompt_all_info': prompt_all_info,
@@ -150,4 +145,4 @@ def creating_csv(csv_name):
     exporting_data_to_csv(df, csv_name)
 
 # Example usage:
-creating_csv("data/prompts.csv")
+creating_csv("data/prompts_v3.csv")
