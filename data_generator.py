@@ -134,7 +134,7 @@ def creating_csv(csv_name):
         prompt_all_info.append(general_prompt.format(additional_info  = letter_source_info_question + " and "+ viewpoint_prompt + reader_info_question + " and is " + row['politics']) + article_info_question)
 
     df = pd.DataFrame({
-        'article_id': data['id'],
+        'article_id': data['article_id'],
         'prompt_article_info': prompt_article_info,
         'prompt_politics_info': prompt_politics_info,
         'prompt_letter_source_info': prompt_letter_source_info,
