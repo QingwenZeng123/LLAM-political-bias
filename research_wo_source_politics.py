@@ -85,8 +85,8 @@ def run_experiment_and_write_csv(data, model_name, context, output_filename, pro
             row = [index, answer]
             writer.writerow(row)
 
-data = pd.read_csv('data/prompts.csv')
-# data = pd.read_csv('data/prompts_v3.csv')
+#data = pd.read_csv('data/prompts.csv')
+data = pd.read_csv('data/prompts_v3.csv')
 
 
 def run_experiments():
@@ -115,14 +115,14 @@ def run_experiments():
                               An article is-biased in its presentation of the topic, meaning that it ever exaggerates, misrepresents, omits,\
                               or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group.\n"
 
-    run_experiment_and_write_csv(data, "llama", article_only_context, "result_data/v2/original_prompt_result.csv", 'prompt_article_info')
-    run_experiment_and_write_csv(data, "llama", political_side_context, "result_data/v2/participant_politics_result.csv", "prompt_politics_info")
-    run_experiment_and_write_csv(data, "llama", article_source_context, "result_data/v2/article_source_result.csv", "prompt_letter_source_info")
-    run_experiment_and_write_csv(data, "llama", all_information_context, "result_data/v2/all_result.csv", "prompt_all_info")
+    #run_experiment_and_write_csv(data, "llama", article_only_context, "result_data/v2/original_prompt_result.csv", 'prompt_article_info')
+    #run_experiment_and_write_csv(data, "llama", political_side_context, "result_data/v2/participant_politics_result.csv", "prompt_politics_info")
+    #run_experiment_and_write_csv(data, "llama", article_source_context, "result_data/v2/article_source_result.csv", "prompt_letter_source_info")
+    #run_experiment_and_write_csv(data, "llama", all_information_context, "result_data/v2/all_result.csv", "prompt_all_info")
     
-    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/original_prompt_result.csv", 'prompt_article_info')
-    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/participant_politics_result.csv", "prompt_politics_info")
-    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/article_source_result.csv", "prompt_letter_source_info")
-    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/all_result.csv", "prompt_all_info")
+    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/original_prompt_result.csv", 'prompt_article_info')
+    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/participant_politics_result.csv", "prompt_politics_info")
+    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/article_source_result.csv", "prompt_letter_source_info")
+    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/all_result.csv", "prompt_all_info")
 
 run_experiments()
