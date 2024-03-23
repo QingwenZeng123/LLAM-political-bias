@@ -6,7 +6,17 @@ import pandas as pd
 from guidance import models, select, gen
 import csv
 
+# support chatgpt api
+import openai
+from dotenv import load_dotenv
+import os
 
+# Load environment variable from .env
+load_dotenv()
+# create a client
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# llama support method
 @guidance
 def qa_bot(lm, query):
     # choose the answer between is-biased and is-not biased based on guidance
@@ -18,6 +28,25 @@ def qa_bot(lm, query):
     A: {response}'''
     return lm
 
+# gpt support method
+def get_gpt_answer(model_name, query):
+    """
+    This is a method to send one request to chatgpt model 
+    
+    :model_name: a string to show what version of chatgpt model will be used
+    :query: string from prompts.csv
+    :return: string answer
+    """
+    # print(query)
+    request = client.chat.completions.create(
+        model = model_name,
+        messages = [{"role": "user", "content": query}],
+        stream = False,
+    )
+    answer = request.choices[0].message.content
+    print(answer)
+    return answer
+
 def get_llm_answers(data, model_name, context, prompt_column_name):
     """
     This is a method to send the prompt to llm and get answers
@@ -25,6 +54,7 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
     :data: a dataframe used to store prompt and candidats information
     :model_name: a string to mention what llm used, need to initiate a new model every time ask questions 
     :context: is a string that provide llm some backgroud information, eg: the definition of bias
+    :prompt_column_name: a string to express which experiment is running
     :return: answers is an array store 'is-biased' or "is-not-biased", and array index is same as article id
     """
     answers = [''] * len(data)
@@ -39,6 +69,8 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
                 continue
             print('id is: ', row['article_id'])
             query = context + row[prompt_column_name] # This prompt consist of article title and content
+            
+            # llama
             if model_name == 'llama':
                 # Load the llama
                 llama = models.LlamaCpp('orca_mini_v3_7b.Q4_K_M.gguf', 
@@ -49,9 +81,17 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
                 lm = llama + qa_bot(query)
                 print(lm["answer"])
                 answers[row['article_id']] = str(lm['answer'])
+
+            # chatgpt
+            elif model_name[: 3] == "gpt":
+                answer = get_gpt_answer(model_name, query)
+                answers[row['article_id']] = answer
+
         elif prompt_column_name != 'prompt_article_info' and row['article_id'] != 43:
             print("index is", index)
             query = context + row[prompt_column_name] # This prompt consist of article title and content
+
+            # llama
             if model_name == 'llama':
                 # Load the llama
                 llama = models.LlamaCpp('orca_mini_v3_7b.Q4_K_M.gguf', 
@@ -62,7 +102,12 @@ def get_llm_answers(data, model_name, context, prompt_column_name):
                 lm = llama + qa_bot(query)
                 print(lm["answer"])
                 answers[index] = str(lm['answer'])
-    print("Predict from", model_name, "without any attributes is :")
+
+            # chatgpt
+            if model_name[: 3] == "gpt":
+                answer = get_gpt_answer(model_name, query)
+                answers[index] = answer
+
     print(answers)
     return answers
 
@@ -114,15 +159,30 @@ def run_experiments():
                               You answer either is-biased or is-not-biased, with no explanation.\
                               An article is-biased in its presentation of the topic, meaning that it ever exaggerates, misrepresents, omits,\
                               or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group.\n"
-
-    #run_experiment_and_write_csv(data, "llama", article_only_context, "result_data/v2/original_prompt_result.csv", 'prompt_article_info')
-    #run_experiment_and_write_csv(data, "llama", political_side_context, "result_data/v2/participant_politics_result.csv", "prompt_politics_info")
-    #run_experiment_and_write_csv(data, "llama", article_source_context, "result_data/v2/article_source_result.csv", "prompt_letter_source_info")
-    #run_experiment_and_write_csv(data, "llama", all_information_context, "result_data/v2/all_result.csv", "prompt_all_info")
     
-    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/original_prompt_result.csv", 'prompt_article_info')
-    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/participant_politics_result.csv", "prompt_politics_info")
-    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/article_source_result.csv", "prompt_letter_source_info")
-    run_experiment_and_write_csv(data, "llama", "", "result_data/v3/all_result.csv", "prompt_all_info")
+    # # llama v2
+    # run_experiment_and_write_csv(data, "llama", article_only_context, "result_data/v2/original_prompt_result.csv", 'prompt_article_info')
+    # run_experiment_and_write_csv(data, "llama", political_side_context, "result_data/v2/participant_politics_result.csv", "prompt_politics_info")
+    # run_experiment_and_write_csv(data, "llama", article_source_context, "result_data/v2/article_source_result.csv", "prompt_letter_source_info")
+    # run_experiment_and_write_csv(data, "llama", all_information_context, "result_data/v2/all_result.csv", "prompt_all_info")
+    
+    # # llama v3 (different prompts)
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/original_prompt_result.csv", 'prompt_article_info')
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/participant_politics_result.csv", "prompt_politics_info")
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/article_source_result.csv", "prompt_letter_source_info")
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/all_result.csv", "prompt_all_info")
+
+    # gpt v2
+    run_experiment_and_write_csv(data, "gpt-3.5-turbo", article_only_context, "result_data/gpt/v2/gpt_3.5_turbo/original_prompt_result.csv", 'prompt_article_info')
+    # run_experiment_and_write_csv(data, "gpt-3.5-turbo", political_side_context, "result_data/gpt/v2/gpt_3.5_turbo/participant_politics_result.csv", "prompt_politics_info")
+    # run_experiment_and_write_csv(data, "gpt-3.5-turbo", article_source_context, "result_data/gpt/v2/gpt_3.5_turbo/article_source_result.csv", "prompt_letter_source_info")
+    # run_experiment_and_write_csv(data, "gpt-3.5-turbo", all_information_context, "result_data/gpt/v2/gpt_3.5_turbo/all_result.csv", "prompt_all_info")
+    
+    # # gpt v3
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/original_prompt_result.csv", 'prompt_article_info')
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/participant_politics_result.csv", "prompt_politics_info")
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/article_source_result.csv", "prompt_letter_source_info")
+    # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/all_result.csv", "prompt_all_info")
 
 run_experiments()
+

@@ -36,6 +36,7 @@ def collect_analysis(result_file_path, no_other_source = False):
 
 result_file_paths = ['result_data/v2/original_prompt_result.csv', 'result_data/v2/participant_politics_result.csv', 'result_data/v2/article_source_result.csv', 'result_data/v2/all_result.csv']
 output_csv_path = 'result_data/v2/analysis_results.csv'
+
 first_output = []
 conservative = []
 liberal = []
@@ -47,6 +48,7 @@ for file in result_file_paths:
         result = collect_analysis(file, True)
     else:
         result = collect_analysis(file)
+
     
     first_output.append(result[0])
     conservative.append(result[1]['Conservative'])
@@ -64,4 +66,23 @@ df = pd.DataFrame({
     'Other': other,
     'default': default }
  )
-df.to_csv('result_data/v2/analysis_result.csv', index= False) 
+df.to_csv('result_data/v2/analysis_results.csv', index= False) 
+
+
+
+
+
+
+
+# compare gpt and llama answer
+# llama_original = pd.read_csv('result_data/v2/original_prompt_result.csv')
+# gpt_original = pd.read_csv('result_data/gpt/v2/gpt_3.5_turbo/original_prompt_result.csv')
+
+# same = 0
+# count = 0
+# for (index1, row1), (index2, row2) in zip(llama_original.iterrows(), gpt_original.iterrows()):
+#     print(row1['result'], row2['result'])
+#     if row1['result'] == row2['result']:
+#         same += 1
+# print(same)
+
