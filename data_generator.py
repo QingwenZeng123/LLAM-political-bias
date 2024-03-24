@@ -86,7 +86,7 @@ def adding_articles_info_to_csv():
     
 
 def creating_csv(csv_name):
-    general_prompt = "You are going to be the reader of a political article. Your job is to determine whether or not the article is biased. An article is defined as \"biased\" if it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group. After reading the article {additional_info}, your answer should be either \"is-biased\" or \"is-not-biased\". Answer only with one of these phrases and provide no further explanation."
+    general_prompt = "You are going to be the reader of a political article. Your job is to determine whether or not the article is biased. An article is defined as biased if it ever exaggerates, misrepresents, omits, or otherwise distorts facts (including by making subjective opinions look like facts) for the purpose of appealing to a certain political group. After reading the article {additional_info}, your answer should be either is-biased or is-not-biased. Answer only with one of these phrases and provide no further explanation."
     
     data = pd.read_csv('data/data_articles_info.csv')
     prompt_article_info = []
@@ -145,4 +145,4 @@ def creating_csv(csv_name):
     exporting_data_to_csv(df, csv_name)
 
 # Example usage:
-creating_csv("data/prompts_v3.csv")
+creating_csv("data/prompts_v4.csv")
