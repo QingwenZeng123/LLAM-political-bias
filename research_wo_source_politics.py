@@ -130,8 +130,8 @@ def run_experiment_and_write_csv(data, model_name, context, output_filename, pro
             row = [index, answer]
             writer.writerow(row)
 
-#data = pd.read_csv('data/prompts.csv')
-data = pd.read_csv('data/prompts_v3.csv')
+data = pd.read_csv('data/prompts.csv')
+# data = pd.read_csv('data/prompts_v3.csv')
 
 
 def run_experiments():
@@ -172,11 +172,17 @@ def run_experiments():
     # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/article_source_result.csv", "prompt_letter_source_info")
     # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/all_result.csv", "prompt_all_info")
 
-    # gpt v2
-    run_experiment_and_write_csv(data, "gpt-3.5-turbo", article_only_context, "result_data/gpt/v2/gpt_3.5_turbo/original_prompt_result.csv", 'prompt_article_info')
+    # gpt 3.5 turbo v2
+    # run_experiment_and_write_csv(data, "gpt-3.5-turbo", article_only_context, "result_data/gpt/v2/gpt_3.5_turbo/original_prompt_result.csv", 'prompt_article_info')
     # run_experiment_and_write_csv(data, "gpt-3.5-turbo", political_side_context, "result_data/gpt/v2/gpt_3.5_turbo/participant_politics_result.csv", "prompt_politics_info")
     # run_experiment_and_write_csv(data, "gpt-3.5-turbo", article_source_context, "result_data/gpt/v2/gpt_3.5_turbo/article_source_result.csv", "prompt_letter_source_info")
     # run_experiment_and_write_csv(data, "gpt-3.5-turbo", all_information_context, "result_data/gpt/v2/gpt_3.5_turbo/all_result.csv", "prompt_all_info")
+
+    # gpt 4 v2
+    # run_experiment_and_write_csv(data, "gpt-4", article_only_context, "result_data/gpt/v2/gpt_4/original_prompt_result.csv", 'prompt_article_info')
+    # run_experiment_and_write_csv(data, "gpt-4", political_side_context, "result_data/gpt/v2/gpt_4/participant_politics_result.csv", "prompt_politics_info")
+    # run_experiment_and_write_csv(data, "gpt-4", article_source_context, "result_data/gpt/v2/gpt_4/article_source_result.csv", "prompt_letter_source_info")
+    run_experiment_and_write_csv(data, "gpt-3.5-turbo", all_information_context, "result_data/gpt/v2/gpt_4/all_result.csv", "prompt_all_info")
     
     # # gpt v3
     # run_experiment_and_write_csv(data, "llama", "", "result_data/v3/original_prompt_result.csv", 'prompt_article_info')
